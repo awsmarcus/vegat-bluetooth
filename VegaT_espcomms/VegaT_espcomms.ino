@@ -38,7 +38,7 @@ void sendVegaTTransactionRequest(const char* address, uint32_t transactionNumber
   char message[30];
   int len = 0;
 
-  message[len++] = 0x02; // STX
+  //message[len++] = 0x02; // STX
 
   // Address (3 digits)
   strcpy(message + len, address);
@@ -68,7 +68,7 @@ void sendVegaTTransactionRequest(const char* address, uint32_t transactionNumber
   message[len++] = checksumHex[0];
   message[len++] = checksumHex[1];
 
-  message[len++] = 0x0D; // ETX
+  //message[len++] = 0x0D; // ETX
 
   // Debugging output (ASCII)
   Serial.print("Sent message HEX: ");
@@ -87,7 +87,12 @@ void sendVegaTTransactionRequest(const char* address, uint32_t transactionNumber
   Serial.println();
 
   // Send over UART
-  uart.write(message, len);
+  uart.print("02");
+  uart.print(" ");
+  for (int i = 0; i < len; i++) {
+  uart.print(message[i],HEX);
+  uart.print(" ");}// Send the message 
+   uart.print("0D");
 }
 ////////////////////////////////////////////////////////////////////////
 
