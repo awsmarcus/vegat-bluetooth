@@ -23,6 +23,19 @@ uint8_t calculateChecksum(const char* message, int length) {
   return (uint8_t)(checksum % 256);
 }
 ////////////////////////////////////////////////////////////////////////
+/*
+Function :    sendVegaTStatusRequest
+Description : Function to send status request to VegaT
+Arguments :   address,transaction numbers
+Return :      void
+*/
+void sendVegaTstatusRequest(){
+    byte message[] = {0x02, 0x30, 0x30, 0x31, 0x30, 0x33, 0x30, 0x30, 0x30, 0x30, 0x20, 0x20, 0x20, 0x20, 0x36, 0x33, 0x0D};
+  uart.write(message, sizeof(message));  
+  Serial.println("Command sent.");
+}
+////////////////////////////////////////////////////////////////////////
+
 
 
 
@@ -33,12 +46,12 @@ Function :    sendVegaTTransactionRequest
 Description : Function to send transaction data request to VegaT
 Arguments :   address,transaction numbers
 Return :      void
-*/
+
 void sendVegaTTransactionRequest(const char* address, uint32_t transactionNumber) {
   char message[30];
   int len = 0;
 
-  //message[len++] = 0x02; // STX
+  message[len++] = 0x02; // STX
 
   // Address (3 digits)
   strcpy(message + len, address);
@@ -68,7 +81,7 @@ void sendVegaTTransactionRequest(const char* address, uint32_t transactionNumber
   message[len++] = checksumHex[0];
   message[len++] = checksumHex[1];
 
-  //message[len++] = 0x0D; // ETX
+  message[len++] = 0x0D; // ETX
 
   // Debugging output (ASCII)
   Serial.print("Sent message HEX: ");
@@ -87,16 +100,36 @@ void sendVegaTTransactionRequest(const char* address, uint32_t transactionNumber
   Serial.println();
 
   // Send over UART
-  uart.print("02");
-  uart.print(" ");
-  for (int i = 0; i < len; i++) {
-  uart.print(message[i],HEX);
-  uart.print(" ");}// Send the message 
-   uart.print("0D");
-}
+  uart.write(message, len);
+}*/
 ////////////////////////////////////////////////////////////////////////
 
 
+////////////////////////////////////////////////////////////////////////
+/*
+Function :    startbatchmessage
+Description : Function to send start batch request to vgea t 
+Arguments :   none
+Return :      void
+*/
+void startbatchmessage(){
+  byte hexCmd[] = {0x02, 0x30, 0x30, 0x31, 0x31, 0x34, 0x34, 0x20, 0x20, 0x20, 0x20, 0x43, 0x41, 0x0D};
+  uart.write(hexCmd, sizeof(hexCmd));  
+  Serial.println("Command sent.");
+}
+////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////
+/*
+Function :    stopdeliverymessage
+Description : Function to send stop delivery request to vega t
+Arguments :   none
+*/
+void stopdeliverymessage(){
+  byte hexCmd[] = {0x02, 0x30, 0x30, 0x31, 0x31, 0x34, 0x35, 0x31, 0x20, 0x20, 0x20, 0x20, 0x45, 0x44, 0x0D};
+  uart.write(hexCmd, sizeof(hexCmd));  
+  Serial.println("Command sent.");
+}
 
 
 
@@ -107,33 +140,29 @@ Description: Function to send receieve reply from VegaT
 Arguments: 
 Return:      receivedMessage
 */
-void receivemessageVegaT() {
-   if (uart.available() > 0) {
-    char receivedMessage[50];
-    int len = 0;
-    unsigned long startTime = millis();
+String receivemessageVegaT() {
+  String receivedData = "";
+  unsigned long timeout = millis() + 5000;
 
-    while (uart.available() > 0 && len < sizeof(receivedMessage) - 1 && (millis() - startTime) < 500) {
-        receivedMessage[len++] = uart.read();
-        delay(10); // Allow time for additional bytes
+ 
+  while (millis() < timeout) {
+    if (uart.available()) {
+      receivedData += (char)uart.read();
     }
-    receivedMessage[len] = '\0'; // Null-terminate string
+  }
 
-    // Print received message as HEX
-    Serial.print("Received message (HEX): ");
-    for (int i = 0; i < len; i++) {
-        Serial.print((uint8_t)receivedMessage[i], HEX);
-        Serial.print(" ");
-    }
-    Serial.println();
+ 
+  if (receivedData.length() > 0) {
+    Serial.print("Received Data: ");
+    Serial.println(receivedData);
+  } else {
+    Serial.println("No data received.");
+  }
 
-    // Print received message as ASCII
-    Serial.print("Received message (ASCII): ");
-    Serial.println(receivedMessage);
-
-    //return(receivedMessage);
+  delay(5000);
+    return(receivedData);
  }
-}
+
 ////////////////////////////////////////////////////////////////////////
 
 

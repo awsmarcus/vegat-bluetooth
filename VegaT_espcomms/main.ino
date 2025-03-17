@@ -2,6 +2,7 @@
 //#include <SoftwareSerial.h>
 //#include <string.h>
 #include <stdio.h>
+#include "esp_attr.h"
 
 bool connectionstatus = false;
 

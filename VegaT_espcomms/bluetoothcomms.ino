@@ -50,6 +50,7 @@ Return :      void
 */
 void bluetoothcomm(){
 //if (SerialBT.available()) { 
+    String bluetoothmessage;
     String input = SerialBT.readStringUntil('\n'); 
     // Option 1: Directly parse the incoming data into an integer
     int receivedInt  = input.toInt();  
@@ -61,7 +62,7 @@ void bluetoothcomm(){
       case Transaction_Data:
              Serial.println("Transaction data enquired");
              Serial.println();
-             sendVegaTTransactionRequest("001", 1);
+             //sendVegaTTransactionRequest("001", 1);
              receivemessageVegaT();
              SerialBT.println("Transaction Data");
              break;
@@ -69,18 +70,25 @@ void bluetoothcomm(){
       case status :
              Serial.println("Status Enquired");
              Serial.println();
-             SerialBT.println("Status");
+             sendVegaTstatusRequest();
+             bluetoothmessage = receivemessageVegaT();
+             SerialBT.println("Status: ");
+             SerialBT.print(bluetoothmessage);
               break;
       
       case Start :
              Serial.println("Start Batch");
              Serial.println();
+             startbatchmessage();
+             bluetoothmessage = receivemessageVegaT();
              SerialBT.println("Started");
               break;
       
       case Stop :
              Serial.println("Stop Batch");
              Serial.println();
+             stopdeliverymessage();
+             bluetoothmessage = receivemessageVegaT();
              SerialBT.println("Stopped");
               break;
     }
