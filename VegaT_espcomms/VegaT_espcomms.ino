@@ -13,15 +13,37 @@ Description : Function to calculate the checksum (one byte, including STX)
 Arguments :   message,length
 Return :      (uint8_t)(checksum % 256)
 */
-uint8_t calculateChecksum(const char* message, int length) {
-  uint16_t checksum = 0;
+void calculate_checksum (uint8_t *arr, int size, uint8_t *arr1) {
+    if (arr == NULL || size <= 0) {
+        return;
+    }
 
-  for (int i = 0; i < length; i++) {
-    checksum += (uint8_t)message[i];
-  }
+    long long sum = 0;
+    for (int i = 0; i < size; i++) {
+        sum += arr[i];
+    }
 
-  return (uint8_t)(checksum % 256);
+    char hex_sum[17];
+    sprintf(hex_sum, "%llx", sum);
+
+    int hex_len = strlen(hex_sum);
+    char last_two_hex[3] = "00";
+    if (hex_len >= 2) {
+        last_two_hex[0] = hex_sum[hex_len - 2];
+        last_two_hex[1] = hex_sum[hex_len - 1];
+        last_two_hex[2] = '\0';
+    } else if (hex_len == 1){
+        last_two_hex[1] = hex_sum[0];
+    }
+
+    // Corrected conversion:
+    arr1[0] = (uint8_t)last_two_hex[0]; // Directly store ASCII value of first hex digit
+    arr1[1] = (uint8_t)last_two_hex[1]; // Directly store ASCII value of second hex digit
 }
+////////////////////////////////////////////////////////////////////////
+
+
+
 ////////////////////////////////////////////////////////////////////////
 /*
 Function :    sendVegaTStatusRequest
@@ -30,9 +52,45 @@ Arguments :   address,transaction numbers
 Return :      void
 */
 void sendVegaTstatusRequest(){
-    byte message[] = {0x02, 0x30, 0x30, 0x31, 0x30, 0x33, 0x30, 0x30, 0x30, 0x30, 0x20, 0x20, 0x20, 0x20, 0x36, 0x33, 0x0D};
-  uart.write(message, sizeof(message));  
-  Serial.println("Command sent.");
+    uint8_t hexcmd[20]; // Allocate enough space
+    int len = 0;
+    
+
+    hexcmd[len++] = 2; // STX
+
+    hexcmd[len++] = 48; //Address
+    hexcmd[len++] = 48;
+    hexcmd[len++] = 49;
+
+    hexcmd[len++] = 48; //Meter
+
+    hexcmd[len++] = 51;
+    hexcmd[len++] = 48; //Message Code: Status
+
+    hexcmd[len++] = 48; //Counter
+    hexcmd[len++] = 48; //Meter1
+    hexcmd[len++] = 48; //Meter2
+
+    hexcmd[len++] = 32;
+    hexcmd[len++] = 32;
+    hexcmd[len++] = 32;
+    hexcmd[len++] = 32; //Reserved
+
+    uint8_t arr1[2]; // Local arr1
+    calculate_checksum(hexcmd, len, arr1); // Pass arr1
+
+    hexcmd[len++] = arr1[1];
+    hexcmd[len++] = arr1[0]; //Checksum
+
+    hexcmd[len++] = 13;
+
+    uart.write(hexcmd, len); 
+    Serial.println("Command sent.");
+    //Serial.print("CHK1= %d",arr1[1]);
+    //Serial.print(arr1[0]);
+    //Serial.print("CHK2=");
+    //Serial.print(arr1[1]);
+    
 }
 ////////////////////////////////////////////////////////////////////////
 
@@ -126,10 +184,37 @@ Description : Function to send stop delivery request to vega t
 Arguments :   none
 */
 void stopdeliverymessage(){
-  byte hexCmd[] = {0x02, 0x30, 0x30, 0x31, 0x31, 0x34, 0x35, 0x31, 0x20, 0x20, 0x20, 0x20, 0x45, 0x44, 0x0D};
+  byte hexCmd[] = {0x02, 0x30, 0x30, 0x31, 0x31, 0x34, 0x35, 0x31, 0x20, 0x20, 0x20, 0x20, 0x45, 0x41, 0x0D};
   uart.write(hexCmd, sizeof(hexCmd));  
   Serial.println("Command sent.");
 }
+////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////
+/*
+Function :    terminatebatchmessage
+Description : Function to send stop delivery request to vega t
+Arguments :   none
+*/
+void terminatebatchmessage(){
+  byte hexCmd[] = {0x02, 0x30, 0x30, 0x31, 0x31, 0x34, 0x36, 0x30, 0x20, 0x20, 0x20, 0x20, 0x44, 0x44, 0x0D};
+  uart.write(hexCmd, sizeof(hexCmd));  
+  Serial.println("Command sent.");
+}
+////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////
+/*
+Function :    leakedatarequest
+Description : Function to send leak data request to vega t
+Arguments :   none
+*/
+void leakedatarequest(){
+  byte hexCmd[] = {0x02, 0x30, 0x30, 0x31, 0x31, 0x35, 0x33, 0x43, 0x32, 0x0D};
+  uart.write(hexCmd, sizeof(hexCmd));  
+  Serial.println("Command sent.");
+}
+////////////////////////////////////////////////////////////////////////
 
 
 
@@ -157,6 +242,8 @@ String receivemessageVegaT() {
     Serial.println(receivedData);
   } else {
     Serial.println("No data received.");
+    Serial.println("/////////////////////////////////////");
+    receivedData = " No data received";
   }
 
   delay(5000);

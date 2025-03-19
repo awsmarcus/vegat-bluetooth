@@ -10,6 +10,8 @@ String receivedString = "";
 #define  status           2
 #define  Start            3
 #define  Stop             4
+#define  terminatebatch   5
+#define  Leakdata         6
 
 BluetoothSerial SerialBT;
 
@@ -54,14 +56,14 @@ void bluetoothcomm(){
     String input = SerialBT.readStringUntil('\n'); 
     // Option 1: Directly parse the incoming data into an integer
     int receivedInt  = input.toInt();  
+      Serial.println("/////////////////////////////////////");
       Serial.print("Received integer: ");
       Serial.println(receivedInt);
 
     switch (receivedInt) {
 
-      case Transaction_Data:
-             Serial.println("Transaction data enquired");
-             Serial.println();
+      case Transaction_Data: // not implemented right now 
+             //Serial.println();
              //sendVegaTTransactionRequest("001", 1);
              receivemessageVegaT();
              SerialBT.println("Transaction Data");
@@ -69,7 +71,6 @@ void bluetoothcomm(){
 
       case status :
              Serial.println("Status Enquired");
-             Serial.println();
              sendVegaTstatusRequest();
              bluetoothmessage = receivemessageVegaT();
              SerialBT.println("Status: ");
@@ -78,19 +79,34 @@ void bluetoothcomm(){
       
       case Start :
              Serial.println("Start Batch");
-             Serial.println();
              startbatchmessage();
              bluetoothmessage = receivemessageVegaT();
-             SerialBT.println("Started");
+             SerialBT.println(bluetoothmessage);
               break;
       
       case Stop :
              Serial.println("Stop Batch");
-             Serial.println();
              stopdeliverymessage();
              bluetoothmessage = receivemessageVegaT();
-             SerialBT.println("Stopped");
+             SerialBT.println(bluetoothmessage);
               break;
+
+      case terminatebatch :
+            Serial.println("Reset stop Batch");
+             //Serial.println();
+             terminatebatchmessage();
+             bluetoothmessage = receivemessageVegaT();
+             SerialBT.println(bluetoothmessage);
+              break;    
+
+      case Leakdata :
+             Serial.println("leak data requested");
+             leakedatarequest();
+             bluetoothmessage = receivemessageVegaT();
+             SerialBT.println(bluetoothmessage);
+              break;
+
     }
   }
 ///////////////////////////////////////////////////////////////////////
+
