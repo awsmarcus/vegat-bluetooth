@@ -8,6 +8,13 @@ Add bluetooth functionality to the VegaT using an esp32 in order to pull informa
 1. espbluetooth comms
 2. VegaTserialcomms
 
+## Current working features 
+1. 30 - REQUEST OF STATUS MESSAGE 
+2. 44 - START BATCH MESSAGE
+3. 45 – STOP DELIVERY MESSAGE
+4. 46 - TERMINATE BATCH MESSAGE
+5. 53 – LEAK DATA REQUEST MESSAGE
+
 
 
 ## Project Status 
