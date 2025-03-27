@@ -1,10 +1,9 @@
 #include <SoftwareSerial.h>
 #include <string.h>
+#include "VegaT_espcomms.h"
+#include "bluetoothcomms.h"
 
 
-//SoftwareSerial uart = SoftwareSerial(16,17);
-
-//int preset[6];
 
 ///////////////////////////////////////////////////////////////////////
 /*

@@ -1,10 +1,11 @@
 #include "BluetoothSerial.h"
 #include <SoftwareSerial.h>
-//#include <string.h>
 #include <stdio.h>
 #include "bluetoothcomms.h"
 #include "VegaT_espcomms.h"
-bool connectionstatus = false;
+
+
+
 SoftwareSerial uart = SoftwareSerial(16,17);
 BluetoothSerial SerialBT;
 

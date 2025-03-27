@@ -1,9 +1,9 @@
 #include "BluetoothSerial.h"
 //#include <SoftwareSerial.h>
 #include <string.h>
+#include "VegaT_espcomms.h"
+#include "bluetoothcomms.h"
 
-
-//BluetoothSerial SerialBT;
 
 ///////////////////////////////////////////////////////////////////////
 /*
