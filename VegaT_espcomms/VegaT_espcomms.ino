@@ -2,9 +2,9 @@
 #include <string.h>
 
 
-SoftwareSerial uart = SoftwareSerial(16,17);
+//SoftwareSerial uart = SoftwareSerial(16,17);
 
-int preset[6];
+//int preset[6];
 
 ///////////////////////////////////////////////////////////////////////
 /*

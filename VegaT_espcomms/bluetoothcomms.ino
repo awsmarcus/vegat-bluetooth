@@ -2,24 +2,8 @@
 //#include <SoftwareSerial.h>
 #include <string.h>
 
-String device_name = "ESP32-BT-Slave";
-String receivedString = "";
 
-//int preset[6];
-
-#define  Idle             0
-#define  Transaction_Data 1
-#define  status           2
-#define  Start            3
-#define  Stop             4
-#define  terminatebatch   5
-#define  Leakdata         6
-#define  Presetmod        7
-#define  Batchdata        8
-#define  Batchdatastored  9
-#define  Resetstop        10
-
-BluetoothSerial SerialBT;
+//BluetoothSerial SerialBT;
 
 ///////////////////////////////////////////////////////////////////////
 /*
@@ -46,8 +30,35 @@ void Bluetoothinit(){
   Serial.printf("The device with name \"%s\" is started.\nNow you can pair it with Bluetooth!\n", device_name.c_str());
 }
 ///////////////////////////////////////////////////////////////////////
+void bluetoothAuthentication() {
+  if (SerialBT.available()) {
+    String receivedMessage = SerialBT.readString();
+    receivedMessage.trim();  // Remove leading/trailing spaces
+
+    if (receivedMessage.isEmpty()) {
+      return;  // Ignore invalid input
+    }
+
+    Serial.println("Received: " + receivedMessage);
+
+    if (!isAuthenticated) {
+      if (receivedMessage == password) {
+        isAuthenticated = true;
+        Serial.println("Authentication successful.");
+        SerialBT.println("Authentication successful. You now have access.");
+      } else {
+        Serial.println("Invalid password. Access denied.");
+        SerialBT.println("Invalid password. Please try again.");
+        hasPrompted = false;  // Allow retry by resetting the prompt flag
+      }
+    }
+  }
+}
 
 
+bool isauth(){
+  return isAuthenticated;
+}
 
 ///////////////////////////////////////////////////////////////////////
 /*
@@ -75,7 +86,7 @@ void bluetoothcomm(){
              SerialBT.println("Transaction Data");
              */break;
 
-      case status :
+      case vegatstatus :
              //Serial.println("/////////////////////////////////////");
              Serial.println("Status Enquired");
              //Serial.println();
