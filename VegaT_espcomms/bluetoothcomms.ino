@@ -5,6 +5,8 @@
 String device_name = "ESP32-BT-Slave";
 String receivedString = "";
 
+//int preset[6];
+
 #define  Idle             0
 #define  Transaction_Data 1
 #define  status           2
@@ -12,6 +14,10 @@ String receivedString = "";
 #define  Stop             4
 #define  terminatebatch   5
 #define  Leakdata         6
+#define  Presetmod        7
+#define  Batchdata        8
+#define  Batchdatastored  9
+#define  Resetstop        10
 
 BluetoothSerial SerialBT;
 
@@ -62,15 +68,17 @@ void bluetoothcomm(){
 
     switch (receivedInt) {
 
-      case Transaction_Data: // not implemented right now 
+      /*case Transaction_Data: // not implemented right now 
              //Serial.println();
              //sendVegaTTransactionRequest("001", 1);
              receivemessageVegaT();
              SerialBT.println("Transaction Data");
-             break;
+             */break;
 
       case status :
+             //Serial.println("/////////////////////////////////////");
              Serial.println("Status Enquired");
+             //Serial.println();
              sendVegaTstatusRequest();
              bluetoothmessage = receivemessageVegaT();
              SerialBT.println("Status: ");
@@ -78,21 +86,26 @@ void bluetoothcomm(){
               break;
       
       case Start :
+              //Serial.println("/////////////////////////////////////");
              Serial.println("Start Batch");
+             //Serial.println();
              startbatchmessage();
              bluetoothmessage = receivemessageVegaT();
              SerialBT.println(bluetoothmessage);
               break;
       
       case Stop :
+              //Serial.println("/////////////////////////////////////");
              Serial.println("Stop Batch");
+             //Serial.println();
              stopdeliverymessage();
              bluetoothmessage = receivemessageVegaT();
              SerialBT.println(bluetoothmessage);
               break;
 
       case terminatebatch :
-            Serial.println("Reset stop Batch");
+             //Serial.println("/////////////////////////////////////");
+            Serial.println("Terminate Batch");
              //Serial.println();
              terminatebatchmessage();
              bluetoothmessage = receivemessageVegaT();
@@ -100,12 +113,47 @@ void bluetoothcomm(){
               break;    
 
       case Leakdata :
+              //Serial.println("/////////////////////////////////////");
              Serial.println("leak data requested");
+             //Serial.println();
              leakedatarequest();
              bluetoothmessage = receivemessageVegaT();
              SerialBT.println(bluetoothmessage);
               break;
 
+      case Presetmod : {
+            Serial.println("Preset modification");
+              SerialBT.println("Enter preset amount (6 digits) :");
+             String presetinput = SerialBT.readStringUntil('\n'); 
+             for(int i=0;i<6;i++){
+             preset[i] = presetinput[i] - '0';}
+            sendpresetmodificationrequest();
+            bluetoothmessage = receivemessageVegaT();
+            SerialBT.println(bluetoothmessage);
+              break; 
+      }      
+      
+      case Batchdata: 
+           Serial.println("Batch data requested");
+           batchdatarequest();
+           bluetoothmessage = receivemessageVegaT();
+             SerialBT.println(bluetoothmessage);
+              break;
+
+      case Batchdatastored: 
+           Serial.println("Batch data stored");
+           batchdatastoredmessage(); 
+           bluetoothmessage = receivemessageVegaT();
+             SerialBT.println(bluetoothmessage);
+              break;   
+
+      case Resetstop:
+          Serial.println("Reset Stop");
+           resetstopdeliverymessage(); 
+           bluetoothmessage = receivemessageVegaT();
+             SerialBT.println(bluetoothmessage);
+              break; 
+                        
     }
   }
 ///////////////////////////////////////////////////////////////////////

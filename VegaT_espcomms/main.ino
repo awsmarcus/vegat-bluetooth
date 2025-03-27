@@ -2,18 +2,17 @@
 //#include <SoftwareSerial.h>
 //#include <string.h>
 #include <stdio.h>
-#include "esp_attr.h"
 
 bool connectionstatus = false;
 
-void setup() {  
+void setup(){  
   uart.begin(9600);
   uart.listen();
   Serial.begin(115200);
   Bluetoothinit();
 }
 
-void loop() {
+void loop(){
   //bool connectionstatus;
    if(connectionstatus= false ){
    if(SerialBT.connected()){
