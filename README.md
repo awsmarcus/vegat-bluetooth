@@ -2,12 +2,6 @@
 
 Add bluetooth functionality to the VegaT using an esp32 in order to pull information from the VegaT like transaction data and status to a mobile app via bluetooth .
 
-
-## Drivers
-
-1. espbluetooth comms
-2. VegaTserialcomms
-
 ## Current working features 
 1. 30 - REQUEST OF STATUS MESSAGE 
 2. 44 - START BATCH MESSAGE
