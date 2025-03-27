@@ -30,6 +30,16 @@ void Bluetoothinit(){
   Serial.printf("The device with name \"%s\" is started.\nNow you can pair it with Bluetooth!\n", device_name.c_str());
 }
 ///////////////////////////////////////////////////////////////////////
+
+
+
+///////////////////////////////////////////////////////////////////////
+/*
+Function :    bluetoothAuthentication 
+Description : Function for bluetooth password
+Arguments :   none
+Return :      void
+*/
 void bluetoothAuthentication() {
   if (SerialBT.available()) {
     String receivedMessage = SerialBT.readString();
@@ -54,11 +64,23 @@ void bluetoothAuthentication() {
     }
   }
 }
+///////////////////////////////////////////////////////////////////////
 
 
+
+///////////////////////////////////////////////////////////////////////
+/*
+Function :    isauth  
+Description : Function to return isAuthentcated boolean
+Arguments :   none
+Return :      isAuthenticated
+*/
 bool isauth(){
   return isAuthenticated;
 }
+///////////////////////////////////////////////////////////////////////
+
+
 
 ///////////////////////////////////////////////////////////////////////
 /*
